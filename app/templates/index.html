@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Utilisateurs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; overflow-x: hidden; }
+    #sidebar {
+      position: fixed; top: 0; left: 0; height: 100%; width: 220px;
+      background: #212529; color: #fff; transition: all 0.3s; padding-top: 60px;
+    }
+    #sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 12px 20px; transition: 0.3s; }
+    #sidebar a:hover { background: #343a40; color: #fff; }
+    #content { margin-left: 220px; padding: 20px; transition: all 0.3s; }
+    .fade-in { animation: fadeIn 1s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+    /* Modal style */
+    .modal-content { border-radius: 15px; }
+    .modal-header { background: #212529; color: #fff; border-top-left-radius: 15px; border-top-right-radius: 15px; }
+    .form-control:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25); }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h4 class="text-center mb-4"><i class="fa fa-users"></i> CRUD Pro</h4>
+    <a href="{{ url_for('crud.dashboard') }}"><i class="fa fa-chart-line"></i> Dashboard</a>
+    <a href="{{ url_for('crud.home') }}"><i class="fa fa-list"></i> Utilisateurs</a>
+  </div>
+
+  <!-- Content -->
+  <div id="content" class="fade-in">
+    <div class="container-fluid">
+      <h1 class="mb-4 text-center">👥 Gestion des Utilisateurs</h1>
+      <!-- Bouton qui ouvre le formulaire -->
+      <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">
+        <i class="fa fa-user-plus"></i> Ajouter un utilisateur
+      </button>
+
+      <!-- Tableau -->
+      <div class="table-responsive shadow-sm">
+        <table class="table table-hover table-striped align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th><th>Nom</th><th>Prénom</th><th>Âge</th><th>Nationalité</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users.items %}
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.nom }}</td>
+              <td>{{ user.prenom }}</td>
+              <td>{{ user.age }}</td>
+              <td>{{ user.nationalite }}</td>
+              <td>
+                <a href="{{ url_for('crud.update_user', id=user.id) }}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                <a href="{{ url_for('crud.delete_user', id=user.id) }}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% if users.has_prev %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('crud.home', page=users.prev_num) }}">Précédent</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ users.page }}</span></li>
+          {% if users.has_next %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('crud.home', page=users.next_num) }}">Suivant</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Modal Formulaire Ajouter -->
+  <div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fa fa-user-plus"></i> Ajouter un utilisateur</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{{ url_for('crud.add_user') }}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nom</label>
+                <input type="text" name="nom" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Prénom</label>
+                <input type="text" name="prenom" class="form-control" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Âge</label>
+                <input type="number" name="age" class="form-control" required>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Nationalité</label>
+                <input type="text" name="nationalite" class="form-control" required>
+              </div>
+            </div>
+            <div class="mt-4 text-end">
+              <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Enregistrer</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
