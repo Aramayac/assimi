@@ -23,17 +23,18 @@ jobs:
       - name: Deploy app
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "
-            # Aller dans le dossier de l'app
-            cd ~/app || mkdir ~/app && cd ~/app
+            # Créer le dossier si besoin
+            mkdir -p ~/assimi &&
+            cd ~/assimi
 
             # Récupérer le code
             if [ -d .git ]; then
               git pull origin main
             else
-              git clone https://github.com/<Aramayac>/<assimi>.git .
+              git clone https://github.com/Aramayac/assimi.git .
             fi
 
-            # Construire et lancer avec Docker
-            docker-compose down
+            # Construire et lancer avec Docker Compose
+            docker-compose down || true
             docker-compose up -d --build
           "
